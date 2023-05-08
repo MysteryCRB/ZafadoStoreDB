@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -12,15 +11,12 @@ ini_set('display_errors', 1);
 
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 
-
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-
-if(isset($_POST['delete_order'])) {
+if (isset($_POST['delete_order'])) {
     $order_id = $_POST['order_id'];
-    
     
     $sql = "SELECT * FROM orders WHERE order_id = ? AND status = 'unpaid' ";
     $stmt = mysqli_prepare($conn, $sql);
@@ -28,7 +24,6 @@ if(isset($_POST['delete_order'])) {
     mysqli_stmt_execute($stmt);
     $result_order = mysqli_stmt_get_result($stmt);
 
-    
     if (!$result_order) {
         die("Query failed: " . mysqli_error($conn));
     }
@@ -36,24 +31,20 @@ if(isset($_POST['delete_order'])) {
     $row = mysqli_fetch_assoc($result_order);
     $product_id = $row['product_id'];
     
-
     $sql = "DELETE FROM orders WHERE order_id = ?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "i", $order_id);
     $result_delete = mysqli_stmt_execute($stmt);
 
-
     if (!$result_delete) {
         die("Query failed: " . mysqli_error($conn));
     }
 
-    
     $sql = "UPDATE products SET in_stock = in_stock + 1 WHERE product_id = ?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "i", $product_id);
     $result_update = mysqli_stmt_execute($stmt);
 
-    
     if (!$result_update) {
         die("Query failed: " . mysqli_error($conn));
     }
@@ -62,10 +53,11 @@ if(isset($_POST['delete_order'])) {
 $sql = "SELECT * FROM orders WHERE status = 'unpaid'";
 $result = mysqli_query($conn, $sql);
 
-
 if (!$result) {
     die("Query failed: " . mysqli_error($conn));
 }
+
+$num_items = mysqli_num_rows($result); // get the number of items in the cart
 
 ?>
 
